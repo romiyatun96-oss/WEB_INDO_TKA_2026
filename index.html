@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lentera Bahasa - Pusat Soal dan Kisi-Kisi Bahasa Indonesia SMP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Nunito & Fredoka untuk tampilan ramah siswa SMP -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            background-color: #f8fafc;
+        }
+        .font-display {
+            font-family: 'Fredoka', sans-serif;
+        }
+        /* Anti-Print */
+        @media print {
+            body { display: none !important; }
+        }
+        /* Pola latar titik-titik dekoratif */
+        .bg-dots-pattern {
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 18px 18px;
+        }
+        /* Pola watermark dokumen */
+        .watermark-pattern {
+            background-image: repeating-linear-gradient(
+                -28deg,
+                transparent,
+                transparent 100px,
+                rgba(2, 132, 199, 0.04) 100px,
+                rgba(2, 132, 199, 0.04) 102px
+            );
+        }
+        .blur-protection {
+            filter: blur(18px);
+            pointer-events: none;
+            transition: filter 0.2s ease;
+        }
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800 overflow-x-hidden">
+
+    <!-- ========================================================= -->
+    <!-- NOTIFIKASI TOAST (PENGGANTI ALERT)                        -->
+    <!-- ========================================================= -->
+    <div id="toastBox" class="fixed top-4 right-4 z-50 hidden max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <p id="toastMessage" class="text-xs font-bold leading-snug"></p>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAMPILAN 1: BERANDA UTAMA PEMBELI (1 LAYAR LAPTOP)        -->
+    <!-- ========================================================= -->
+    <div id="viewStore" class="flex-1 flex flex-col justify-between">
+
+        <!-- BAR PRATINJAU KHUSUS SAAT ADMIN MELIHAT TAMPILAN PEMBELI -->
+        <div id="adminPreviewBar" class="hidden bg-amber-500 text-slate-950 px-4 py-2 text-xs font-extrabold flex flex-wrap items-center justify-between gap-2 shadow-md z-30">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-eye text-sm"></i>
+                <span>Mode Pratinjau Admin: Anda sedang melihat perubahan pada Tampilan Pembeli secara langsung.</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openAdminPanel()" class="bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-1 rounded-full text-[11px] font-extrabold transition shadow">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke Panel Admin
+                </button>
+                <button onclick="logoutAdmin()" class="bg-white/80 hover:bg-white text-slate-900 px-3 py-1 rounded-full text-[11px] font-extrabold transition">
+                    Kunci Sesi Admin
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. HERO BANNER (Sesuai Gambar Referensi Lentera Bahasa) -->
+        <header class="relative bg-gradient-to-b from-[#0284c7] via-[#0ea5e9] to-[#bae6fd] pt-3 pb-4 px-4 md:px-8 overflow-hidden border-b border-sky-200 shadow-sm">
+            <!-- Dekorasi Bintang & Buku Latar -->
+            <div class="pointer-events-none absolute inset-0 overflow-hidden opacity-35">
+                <i class="fa-solid fa-star text-yellow-300 text-sm absolute top-5 left-[8%]"></i>
+                <i class="fa-solid fa-star text-yellow-200 text-xs absolute top-14 left-[26%]"></i>
+                <i class="fa-solid fa-star text-yellow-300 text-base absolute top-6 right-[22%]"></i>
+                <i class="fa-solid fa-star text-white text-xs absolute top-16 right-[10%]"></i>
+                <i class="fa-solid fa-book-open text-white text-3xl absolute top-4 left-[16%] -rotate-12 opacity-30"></i>
+                <i class="fa-solid fa-book text-white text-3xl absolute top-6 right-[14%] rotate-12 opacity-30"></i>
+            </div>
+
+            <!-- Tombol Gembok Admin (Pojok Kanan Atas - Tanpa Teks Admin) -->
+            <div class="max-w-6xl mx-auto relative z-20 flex justify-end">
+                <button onclick="openAdminLoginModal()" title="Pengaturan" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/35 text-white flex items-center justify-center transition backdrop-blur-sm">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                </button>
+            </div>
+
+            <div class="max-w-6xl mx-auto relative z-10 -mt-5">
+                <!-- Logo Lentera Bahasa -->
+                <div class="flex items-center justify-center gap-2">
+                    <span class="font-display text-2xl md:text-4xl font-bold text-white drop-shadow-[0_2px_2px_rgba(3,105,161,0.9)] tracking-wide">
+                        Lentera
+                    </span>
+                    <!-- Ikon Lentera Menyala -->
+                    <span class="inline-flex items-center justify-center w-9 h-9 md:w-11 md:h-11 rounded-2xl bg-gradient-to-b from-amber-300 to-orange-500 shadow-lg border-2 border-white transform -rotate-3">
+                        <i class="fa-solid fa-fire-flame-curved text-white text-lg md:text-xl"></i>
+                    </span>
+                    <span class="font-display text-2xl md:text-4xl font-bold text-orange-500 bg-white px-2.5 py-0.5 rounded-xl shadow border-2 border-orange-200 tracking-wide">
+                        Bahasa
+                    </span>
+                </div>
+
+                <!-- Subjudul Utama -->
+                <h1 class="text-center font-extrabold text-white text-base md:text-2xl mt-1 drop-shadow-[0_1px_2px_rgba(3,105,161,0.8)]">
+                    Pusat Soal dan Kisi-Kisi <span class="underline decoration-yellow-300 decoration-2 underline-offset-4">Bahasa Indonesia</span>
+                </h1>
+
+                <!-- Strip Putih-Hijau dengan Ilustrasi 4 Siswa SMP Belajar Bersama -->
+                <div class="mt-3 bg-gradient-to-r from-white/95 via-emerald-50/95 to-teal-50/90 rounded-2xl px-4 py-2.5 shadow-md border border-white flex flex-col md:flex-row items-center justify-between gap-3">
+                    <!-- Ilustrasi SVG Siswa SMP Belajar Bersama -->
+                    <div class="flex items-center gap-3">
+                        <div class="flex -space-x-2 items-end bg-sky-100/80 px-3 py-1.5 rounded-xl border border-sky-200">
+                            <!-- Siswa 1 -->
+                            <div class="w-9 h-9 rounded-full bg-sky-600 text-white flex items-center justify-center border-2 border-white shadow-sm" title="Siswa SMP">
+                                <i class="fa-solid fa-user-graduate text-sm"></i>
+                            </div>
+                            <!-- Siswi Berjilbab -->
+                            <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center border-2 border-white shadow-sm" title="Siswi SMP">
+                                <i class="fa-solid fa-book-open-reader text-base"></i>
+                            </div>
+                            <!-- Siswa 3 -->
+                            <div class="w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center border-2 border-white shadow-sm" title="Siswa SMP">
+                                <i class="fa-solid fa-pen-nib text-sm"></i>
+                            </div>
+                            <!-- Siswi 4 -->
+                            <div class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center border-2 border-white shadow-sm" title="Siswi SMP">
+                                <i class="fa-solid fa-lightbulb text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-xs md:text-sm font-extrabold text-slate-800">
+                                Selamat Datang di Portal Belajar Bahasa Indonesia!
+                            </p>
+                            <p class="text-[11px] text-slate-600">
+                                Pilih kelasmu di bawah untuk melihat paket Kisi-Kisi, Soal, dan Pembahasan.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="hidden sm:inline-block text-[10px] font-bold bg-sky-100 text-sky-800 px-2.5 py-1 rounded-full border border-sky-200">
+                            ID Media: <strong id="bannerDeviceId" class="font-mono">...</strong>
+                        </span>
+                        <button onclick="selectGradeAndShowCatalog('Kelas VII')" class="bg-white hover:bg-sky-50 text-slate-800 font-extrabold text-xs px-4 py-1.5 rounded-full shadow border border-slate-300 transition">
+                            Pelajari Selengkapnya
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 2. AREA 3 KARTU KELAS (KELAS VII, KELAS VIII, KELAS IX) -->
+        <main class="flex-1 bg-dots-pattern py-3 px-4 md:px-8 flex flex-col justify-center">
+            <div class="max-w-6xl mx-auto w-full space-y-4">
+
+                <!-- Grid 3 Kartu Kelas (Persis Gambar Referensi) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    <!-- KARTU KELAS VII (BIRU) -->
+                    <div onclick="selectGradeAndShowCatalog('Kelas VII')" class="card-hover cursor-pointer rounded-3xl bg-gradient-to-br from-[#0284c7] to-[#0ea5e9] p-1 shadow-lg border-2 border-white">
+                        <div class="h-full rounded-[20px] border-2 border-white/60 p-4 flex items-center justify-between relative overflow-hidden">
+                            <div class="space-y-1 z-10">
+                                <h2 class="font-display text-2xl md:text-3xl font-bold text-white leading-none drop-shadow">
+                                    KELAS<br><span class="text-3xl md:text-4xl">VII</span>
+                                </h2>
+                                <p class="text-xs md:text-sm font-bold text-sky-100 pt-0.5">Soal & Kisi-Kisi</p>
+                                <div class="pt-2">
+                                    <span class="inline-block bg-white hover:bg-sky-50 text-sky-800 font-extrabold text-xs px-4 py-1.5 rounded-full shadow-md transition">
+                                        Buka Soal!
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Ilustrasi Siswa Kelas VII -->
+                            <div class="relative z-10 flex flex-col items-center justify-center pr-1">
+                                <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/40 flex flex-col items-center justify-center text-white shadow-inner">
+                                    <div class="flex gap-1 text-amber-300 text-xs mb-1">
+                                        <span class="font-black">A</span>
+                                        <i class="fa-solid fa-book-open"></i>
+                                        <span class="font-black">?</span>
+                                    </div>
+                                    <i class="fa-solid fa-child-reaching text-3xl md:text-4xl text-white drop-shadow"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KARTU KELAS VIII (HIJAU) -->
+                    <div onclick="selectGradeAndShowCatalog('Kelas VIII')" class="card-hover cursor-pointer rounded-3xl bg-gradient-to-br from-[#059669] to-[#10b981] p-1 shadow-lg border-2 border-white">
+                        <div class="h-full rounded-[20px] border-2 border-white/60 p-4 flex items-center justify-between relative overflow-hidden">
+                            <div class="space-y-1 z-10">
+                                <h2 class="font-display text-2xl md:text-3xl font-bold text-white leading-none drop-shadow">
+                                    KELAS<br><span class="text-3xl md:text-4xl">VIII</span>
+                                </h2>
+                                <p class="text-xs md:text-sm font-bold text-emerald-100 pt-0.5">Soal & Materi</p>
+                                <div class="pt-2">
+                                    <span class="inline-block bg-white hover:bg-emerald-50 text-emerald-800 font-extrabold text-xs px-4 py-1.5 rounded-full shadow-md transition">
+                                        Buka Soal!
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Ilustrasi Siswa Kelas VIII -->
+                            <div class="relative z-10 flex flex-col items-center justify-center pr-1">
+                                <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/40 flex flex-col items-center justify-center text-white shadow-inner">
+                                    <div class="flex gap-1.5 text-yellow-300 text-xs mb-1">
+                                        <i class="fa-solid fa-gears"></i>
+                                        <i class="fa-solid fa-lightbulb"></i>
+                                    </div>
+                                    <i class="fa-solid fa-users-line text-3xl md:text-4xl text-white drop-shadow"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KARTU KELAS IX (ORANYE) -->
+                    <div onclick="selectGradeAndShowCatalog('Kelas IX')" class="card-hover cursor-pointer rounded-3xl bg-gradient-to-br from-[#ea580c] to-[#f97316] p-1 shadow-lg border-2 border-white">
+                        <div class="h-full rounded-[20px] border-2 border-white/60 p-4 flex items-center justify-between relative overflow-hidden">
+                            <div class="space-y-1 z-10">
+                                <h2 class="font-display text-2xl md:text-3xl font-bold text-white leading-none drop-shadow">
+                                    KELAS<br><span class="text-3xl md:text-4xl">IX</span>
+                                </h2>
+                                <p class="text-xs md:text-sm font-bold text-orange-100 pt-0.5">Soal & Persiapan Ujian</p>
+                                <div class="pt-2">
+                                    <span class="inline-block bg-white hover:bg-orange-50 text-orange-800 font-extrabold text-xs px-4 py-1.5 rounded-full shadow-md transition">
+                                        Buka Soal!
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Ilustrasi Siswa Kelas IX -->
+                            <div class="relative z-10 flex flex-col items-center justify-center pr-1">
+                                <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/40 flex flex-col items-center justify-center text-white shadow-inner">
+                                    <div class="flex gap-1.5 text-yellow-200 text-xs mb-1">
+                                        <i class="fa-regular fa-clock"></i>
+                                        <i class="fa-solid fa-graduation-cap"></i>
+                                    </div>
+                                    <i class="fa-solid fa-user-pen text-3xl md:text-4xl text-white drop-shadow"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- DAFTAR PAKET (DISEMBUNYIKAN, MUNCUL SAAT KLIK KELAS)      -->
+                <!-- ========================================================= -->
+                <section id="catalogSection" class="hidden bg-white rounded-3xl p-5 shadow-xl border-2 border-sky-200 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                        <div>
+                            <span id="activeGradeBadge" class="inline-block text-[10px] font-extrabold uppercase tracking-wider bg-sky-100 text-sky-800 px-3 py-0.5 rounded-full">
+                                MENAMPILKAN PAKET PILIHAN
+                            </span>
+                            <h3 class="text-base md:text-lg font-extrabold text-slate-900 mt-0.5">
+                                Daftar Paket Kisi-Kisi, Soal & Pembahasan
+                            </h3>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <button onclick="selectGradeAndShowCatalog('Semua')" id="filterBtnSemua" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Semua</button>
+                            <button onclick="selectGradeAndShowCatalog('Kelas VII')" id="filterBtnVII" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Kelas 7</button>
+                            <button onclick="selectGradeAndShowCatalog('Kelas VIII')" id="filterBtnVIII" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Kelas 8</button>
+                            <button onclick="selectGradeAndShowCatalog('Kelas IX')" id="filterBtnIX" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Kelas 9</button>
+                            <button onclick="hideCatalogSection()" class="ml-2 px-3 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-700 hover:bg-rose-200 transition">
+                                <i class="fa-solid fa-xmark mr-1"></i>Tutup
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Grid 9 Paket -->
+                    <div id="packageGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+
+                    <!-- Tombol Klik Paket Lainnya (Muncul jika paket > 9) -->
+                    <div id="loadMoreContainer" class="hidden text-center pt-2">
+                        <button onclick="showAllRemainingPackages()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-xs px-6 py-2.5 rounded-full shadow transition">
+                            <i class="fa-solid fa-layer-group mr-1.5"></i> Klik Paket Lainnya
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 3. AREA UJI COBA SOAL & LATIHAN (Bagian Bawah Sesuai Gambar) -->
+                <section class="bg-gradient-to-r from-sky-50 via-white to-emerald-50 rounded-3xl p-4 shadow-md border border-slate-200">
+                    <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
+
+                        <!-- Ilustrasi Diskusi Siswa & Judul -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-16 h-16 rounded-2xl bg-sky-600 text-white flex flex-col items-center justify-center shadow shrink-0 border-2 border-sky-300">
+                                <i class="fa-solid fa-people-group text-2xl"></i>
+                                <span class="text-[9px] font-bold uppercase mt-0.5">Uji Coba</span>
+                            </div>
+                            <div>
+                                <h2 class="font-display text-lg md:text-2xl font-bold text-slate-900">
+                                    Uji Coba Soal & Latihan
+                                </h2>
+                                <p class="text-xs text-slate-600">
+                                    Coba kerjakan latihan soal interaktif lengkap dengan kisi-kisi, skor langsung, dan pembahasan!
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 3 Kartu Latihan (Simulasi TKA, Ulangan Semester, Soal Harian) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
+                            <!-- Simulasi TKA -->
+                            <div class="bg-sky-100/80 border border-sky-200 rounded-2xl px-4 py-2.5 text-center flex flex-col justify-between items-center shadow-sm">
+                                <h3 class="font-extrabold text-xs md:text-sm text-slate-800 mb-2">Simulasi TKA</h3>
+                                <button onclick="openPracticeQuizByType('TKA')" class="w-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-extrabold text-xs px-4 py-1.5 rounded-full shadow transition">
+                                    Ikuti Sekarang!
+                                </button>
+                            </div>
+
+                            <!-- Latihan Ulangan Semester -->
+                            <div class="bg-purple-100/70 border border-purple-200 rounded-2xl px-4 py-2.5 text-center flex flex-col justify-between items-center shadow-sm">
+                                <h3 class="font-extrabold text-xs md:text-sm text-slate-800 mb-2">Latihan Ulangan Semester</h3>
+                                <button onclick="openPracticeQuizByType('SEMESTER')" class="w-full bg-[#10b981] hover:bg-[#059669] text-white font-extrabold text-xs px-4 py-1.5 rounded-full shadow transition">
+                                    Mulai Latihan!
+                                </button>
+                            </div>
+
+                            <!-- Latihan Soal Harian -->
+                            <div class="bg-emerald-100/70 border border-emerald-200 rounded-2xl px-4 py-2.5 text-center flex flex-col justify-between items-center shadow-sm">
+                                <h3 class="font-extrabold text-xs md:text-sm text-slate-800 mb-2">Latihan Soal Harian</h3>
+                                <button onclick="openPracticeQuizByType('HARIAN')" class="w-full bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-xs px-4 py-1.5 rounded-full shadow transition">
+                                    Mulai Latihan!
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- 4. FOOTER BAWAH (Sesuai Gambar Referensi) -->
+        <footer class="bg-gradient-to-r from-[#0284c7] via-[#0d9488] to-[#10b981] text-white py-2.5 px-4 md:px-8 border-t-2 border-amber-300">
+            <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1.5 font-display font-bold text-base">
+                        <i class="fa-solid fa-fire-flame-curved text-amber-300"></i>
+                        <span>Lentera <span class="text-amber-300">Bahasa</span></span>
+                    </div>
+                    <div class="hidden md:flex items-center gap-3 text-white/90 font-semibold">
+                        <a href="#tentang" onclick="event.preventDefault(); selectGradeAndShowCatalog('Semua');" class="hover:underline">Tentang Kami</a>
+                        <a href="#bantuan" onclick="event.preventDefault(); openPracticeQuizByType('TKA');" class="hover:underline">Bantuan</a>
+                        <a href="#privacy" onclick="event.preventDefault(); showToast('Dokumen dilindungi Lisensi Tunggal Perangkat.');" class="hover:underline">Privacy</a>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-brands fa-facebook-f text-[11px]"></i></span>
+                    <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-brands fa-instagram text-[11px]"></i></span>
+                    <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-brands fa-youtube text-[11px]"></i></span>
+                </div>
+
+                <div class="flex items-center gap-2 text-[11px] font-semibold text-white/95">
+                    <span>&copy; 2026 Lentera Bahasa. Belajar Bahasa Indonesia Lebih Seru!</span>
+                    <button onclick="openAdminLoginModal()" class="opacity-60 hover:opacity-100 ml-1" title="Pengelola">
+                        <i class="fa-solid fa-lock text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAMPILAN 2: 3 RUANG UNDUH PEMBELI (TERKUNCI PERANGKAT)     -->
+    <!-- ========================================================= -->
+    <div id="viewReader" class="hidden min-h-screen bg-slate-100 py-6 px-4 md:px-8">
+        <div class="max-w-5xl mx-auto space-y-4">
+            <!-- Bar Atas Ruang Unduh -->
+            <div class="bg-slate-900 text-white rounded-3xl p-5 shadow-xl flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                            <i class="fa-solid fa-shield-halved mr-1"></i>TERKUNCI DI MEDIA INI
+                        </span>
+                        <span id="readerGradeBadge" class="bg-sky-500/20 text-sky-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">Kelas IX</span>
+                    </div>
+                    <h2 id="readerPkgTitle" class="text-base md:text-lg font-extrabold mt-1">Paket Soal Bahasa Indonesia</h2>
+                    <p class="text-xs text-slate-400">
+                        Lisensi WA: <strong id="readerBuyerWa" class="text-amber-300"></strong> | ID Media: <strong id="readerDeviceId" class="font-mono text-sky-300"></strong>
+                    </p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="readerBackToAdminBtn" onclick="openAdminPanel()" class="hidden bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold px-4 py-2 rounded-full transition shadow">
+                        <i class="fa-solid fa-user-shield mr-1.5"></i> Kembali ke Panel Admin
+                    </button>
+                    <button onclick="backToStoreView()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-extrabold px-4 py-2 rounded-full transition">
+                        <i class="fa-solid fa-arrow-left mr-1.5"></i> Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pilihan 3 Ruang Unduh -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button onclick="switchReaderRoom('kisi')" id="roomBtn-kisi" class="p-4 rounded-2xl border-2 border-sky-600 bg-sky-600 text-white text-left shadow transition flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase opacity-80 block">Ruang Unduh 1</span>
+                        <span class="font-extrabold text-sm">1. Kisi-Kisi Materi</span>
+                    </div>
+                    <i class="fa-solid fa-list-check text-xl"></i>
+                </button>
+                <button onclick="switchReaderRoom('soal')" id="roomBtn-soal" class="p-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-left shadow-sm hover:border-sky-400 transition flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase text-slate-400 block">Ruang Unduh 2</span>
+                        <span class="font-extrabold text-sm">2. Naskah Soal</span>
+                    </div>
+                    <i class="fa-solid fa-file-lines text-xl text-amber-500"></i>
+                </button>
+                <button onclick="switchReaderRoom('bahasan')" id="roomBtn-bahasan" class="p-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-left shadow-sm hover:border-sky-400 transition flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase text-slate-400 block">Ruang Unduh 3</span>
+                        <span class="font-extrabold text-sm">3. Pembahasan & Kunci</span>
+                    </div>
+                    <i class="fa-solid fa-key text-xl text-emerald-600"></i>
+                </button>
+            </div>
+
+            <!-- Layar Dokumen Terproteksi -->
+            <div id="protectedDocumentBox" class="relative bg-white rounded-3xl shadow-xl border border-slate-200 p-6 md:p-8 min-h-[420px] watermark-pattern overflow-hidden">
+                <!-- Watermark Melintang -->
+                <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center z-20 opacity-10 select-none overflow-hidden">
+                    <p id="watermarkLine1" class="text-xl md:text-3xl font-black text-slate-900 -rotate-12 tracking-widest mb-20 text-center"></p>
+                    <p id="watermarkLine2" class="text-xl md:text-3xl font-black text-slate-900 -rotate-12 tracking-widest text-center"></p>
+                </div>
+
+                <!-- Konten Dokumen -->
+                <div id="readerRoomContent" class="relative z-10 prose max-w-none text-sm leading-relaxed text-slate-800 space-y-3"></div>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 text-xs text-amber-900 flex flex-wrap justify-between items-center gap-2">
+                <span><i class="fa-solid fa-lock mr-1.5"></i><strong>Proteksi DRM Aktif:</strong> File ini dikunci hanya untuk media pengunduh ini dan tidak dapat digandakan ke perangkat lain.</span>
+                <span class="font-bold text-rose-600">Anti-Salin & Anti-Cetak Aktif</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAMPILAN 3: PANEL ADMIN (UNGGAH PAKET, TKA & REKENING)    -->
+    <!-- ========================================================= -->
+    <div id="viewAdmin" class="hidden min-h-screen bg-slate-100 py-6 px-4 md:px-8">
+        <div class="max-w-6xl mx-auto space-y-6">
+            <!-- Header Admin -->
+            <div class="bg-slate-900 text-white rounded-3xl p-5 shadow-xl flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black">
+                        <i class="fa-solid fa-user-shield text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base md:text-lg font-extrabold">Panel Admin Lentera Bahasa</h2>
+                        <p class="text-xs text-slate-400">Kelola Rekening Transfer, Unggah Paket Kelas 7/8/9, dan Unggah Soal Simulasi TKA / Semester / Harian</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="previewBuyerView()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-4 py-2 rounded-full transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-eye"></i> Lihat Tampilan Pembeli
+                    </button>
+                    <button onclick="logoutAdmin()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold px-4 py-2 rounded-full transition">
+                        <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Keluar dari Admin
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- KOLOM KIRI: PENGATURAN REKENING & KODE AKTIVASI -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-white rounded-3xl p-5 shadow-md border border-slate-200 space-y-4">
+                        <h3 class="font-extrabold text-sm text-slate-900 border-b pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-building-columns text-sky-600"></i>
+                            1. Pengaturan Rekening & Kode Aktivasi
+                        </h3>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Nama Bank / Metode Pembayaran</label>
+                                <input type="text" id="adminBankName" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Nomor Rekening</label>
+                                    <input type="text" id="adminBankNumber" class="w-full border border-slate-300 rounded-xl px-3 py-2 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Atas Nama</label>
+                                    <input type="text" id="adminBankHolder" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">No. WhatsApp Admin</label>
+                                    <input type="text" id="adminWaNumber" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Kode Aktivasi Utama</label>
+                                    <input type="text" id="adminLicenseCode" class="w-full border border-slate-300 rounded-xl px-3 py-2 font-mono uppercase">
+                                </div>
+                            </div>
+                            <button onclick="saveBankSettings()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-2.5 rounded-full transition shadow">
+                                <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Pengaturan Rekening & Kode
+                            </button>
+
+                            <!-- Generator Kode Aktivasi Unik Berdasarkan ID Media Pembeli -->
+                            <div class="mt-3 pt-3 border-t border-slate-200 space-y-2 bg-amber-50/70 p-3 rounded-2xl border border-amber-200">
+                                <label class="block font-extrabold text-amber-900 text-[11px]">
+                                    <i class="fa-solid fa-key mr-1"></i>Buat Kode Khusus per ID Media Pembeli (Opsional)
+                                </label>
+                                <p class="text-[10px] text-slate-600 leading-relaxed">
+                                    Masukkan <strong>ID Media</strong> dari pesan WhatsApp pembeli untuk membuat kode unik yang hanya bisa dipakai di perangkat pembeli tersebut:
+                                </p>
+                                <div class="flex gap-1.5">
+                                    <input type="text" id="adminTargetDeviceId" placeholder="Contoh: SMP-SDR6C" oninput="generateDeviceSpecificCode()" class="flex-1 border border-amber-300 rounded-xl px-2.5 py-1.5 font-mono uppercase text-xs bg-white">
+                                    <button type="button" onclick="copyGeneratedDeviceCode()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-[11px] transition shrink-0">
+                                        <i class="fa-regular fa-copy mr-1"></i>Salin Kode
+                                    </button>
+                                </div>
+                                <div class="flex justify-between items-center bg-white px-3 py-1.5 rounded-xl border border-amber-200">
+                                    <span class="text-[10px] text-slate-500 font-semibold">Kode Balasan ke WA Pembeli:</span>
+                                    <strong id="generatedDeviceCodeOutput" class="font-mono text-xs text-emerald-700 font-extrabold">-</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daftar Paket Katalog yang Sudah Diunggah -->
+                    <div class="bg-white rounded-3xl p-5 shadow-md border border-slate-200 space-y-3">
+                        <h3 class="font-extrabold text-sm text-slate-900 border-b pb-2 flex items-center justify-between">
+                            <span><i class="fa-solid fa-boxes-stacked text-emerald-600 mr-1.5"></i>Daftar Paket Terunggah</span>
+                            <span id="adminPkgCount" class="text-xs bg-slate-100 px-2.5 py-0.5 rounded-full">0 Paket</span>
+                        </h3>
+                        <div id="adminPackageList" class="space-y-2 max-h-80 overflow-y-auto pr-1 text-xs"></div>
+                    </div>
+
+                    <!-- Riwayat Laporan Transfer Otomatis -->
+                    <div class="bg-white rounded-3xl p-5 shadow-md border border-slate-200 space-y-3">
+                        <h3 class="font-extrabold text-sm text-slate-900 border-b pb-2 flex items-center justify-between">
+                            <span><i class="fa-brands fa-whatsapp text-emerald-600 mr-1.5"></i>Log Laporan Transfer Otomatis</span>
+                            <span id="adminOrderCount" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">0 Laporan</span>
+                        </h3>
+                        <div id="adminOrderLogList" class="space-y-2 max-h-60 overflow-y-auto pr-1 text-xs"></div>
+                    </div>
+                </div>
+
+                <!-- KOLOM KANAN: UNGGAH PAKET BARU (3 RUANG) & UNGGAH SOAL LATIHAN -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <!-- FORM UNGGAH PAKET BARU (3 RUANG UNDUH) -->
+                    <div class="bg-white rounded-3xl p-5 shadow-md border border-slate-200 space-y-4">
+                        <h3 class="font-extrabold text-sm text-slate-900 border-b pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i>
+                            2. Unggah Paket Katalog Baru (Kelas VII, VIII, IX - 3 Ruang Unduh)
+                        </h3>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <div class="sm:col-span-2">
+                                    <label class="block font-bold text-slate-700 mb-1">Judul Paket Soal</label>
+                                    <input type="text" id="newPkgTitle" placeholder="Contoh: Paket Intensif Teks Diskusi Kelas IX" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Pilih Kelas</label>
+                                    <select id="newPkgGrade" class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white font-bold">
+                                        <option value="Kelas VII">Kelas VII</option>
+                                        <option value="Kelas VIII">Kelas VIII</option>
+                                        <option value="Kelas IX">Kelas IX</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Harga Paket (Rp)</label>
+                                    <input type="number" id="newPkgPrice" value="40000" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Keterangan Jumlah Soal</label>
+                                    <input type="text" id="newPkgBadge" placeholder="Contoh: 40 Butir Soal HOTS" class="w-full border border-slate-300 rounded-xl px-3 py-2">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Deskripsi Singkat Paket</label>
+                                <input type="text" id="newPkgDesc" placeholder="Ringkasan materi yang diujikan dalam paket ini..." class="w-full border border-slate-300 rounded-xl px-3 py-2">
+                            </div>
+
+                            <!-- 3 Tempat Unggah Terpisah (Kisi-Kisi, Soal, Pembahasan) -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                                <!-- Ruang 1: Kisi-Kisi -->
+                                <div class="p-3 rounded-2xl bg-sky-50 border border-sky-200 space-y-1.5">
+                                    <label class="block font-extrabold text-sky-900">1. Unggah Kisi-Kisi</label>
+                                    <input type="file" accept=".txt,.html,.pdf" onchange="handleFileRead(event, 'newPkgKisi')" class="text-[10px] w-full">
+                                    <textarea id="newPkgKisi" rows="3" placeholder="Atau ketik/tempel isi Kisi-Kisi di sini..." class="w-full border border-sky-200 rounded-xl p-2 text-[11px] bg-white"></textarea>
+                                </div>
+                                <!-- Ruang 2: Soal -->
+                                <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 space-y-1.5">
+                                    <label class="block font-extrabold text-amber-900">2. Unggah Naskah Soal</label>
+                                    <input type="file" accept=".txt,.html,.pdf" onchange="handleFileRead(event, 'newPkgSoal')" class="text-[10px] w-full">
+                                    <textarea id="newPkgSoal" rows="3" placeholder="Atau ketik/tempel Naskah Soal di sini..." class="w-full border border-amber-200 rounded-xl p-2 text-[11px] bg-white"></textarea>
+                                </div>
+                                <!-- Ruang 3: Pembahasan -->
+                                <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1.5">
+                                    <label class="block font-extrabold text-emerald-900">3. Unggah Pembahasan</label>
+                                    <input type="file" accept=".txt,.html,.pdf" onchange="handleFileRead(event, 'newPkgBahasan')" class="text-[10px] w-full">
+                                    <textarea id="newPkgBahasan" rows="3" placeholder="Atau ketik/tempel Pembahasan di sini..." class="w-full border border-emerald-200 rounded-xl p-2 text-[11px] bg-white"></textarea>
+                                </div>
+                            </div>
+
+                            <button onclick="addNewCatalogPackage()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-full shadow transition">
+                                <i class="fa-solid fa-plus-circle mr-1"></i> Unggah & Tampilkan Paket di Katalog Kelas
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TEMPAT UNGGAH TERSENDIRI: SIMULASI TKA, ULANGAN SEMESTER & ULANGAN HARIAN -->
+                    <div class="bg-white rounded-3xl p-5 shadow-md border border-slate-200 space-y-4">
+                        <h3 class="font-extrabold text-sm text-slate-900 border-b pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-laptop-file text-indigo-600"></i>
+                            3. Tempat Unggah Tersendiri: Simulasi TKA, Ulangan Semester & Ulangan Harian
+                        </h3>
+
+                        <!-- Tab Pilihan Tipe Latihan -->
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="switchAdminPracticeTab('TKA')" id="admTab-TKA" class="px-4 py-1.5 rounded-full text-xs font-extrabold bg-sky-600 text-white">
+                                1. Tempat Unggah Simulasi TKA
+                            </button>
+                            <button onclick="switchAdminPracticeTab('SEMESTER')" id="admTab-SEMESTER" class="px-4 py-1.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700">
+                                2. Tempat Unggah Ulangan Semester
+                            </button>
+                            <button onclick="switchAdminPracticeTab('HARIAN')" id="admTab-HARIAN" class="px-4 py-1.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700">
+                                3. Tempat Unggah Ulangan Harian
+                            </button>
+                        </div>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Judul Latihan (<span id="admPracticeTypeLabel">TKA</span>)</label>
+                                <input type="text" id="admPracticeTitle" class="w-full border border-slate-300 rounded-xl px-3 py-2 font-bold">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Kisi-Kisi Latihan (Tampil di Atas Aplikasi Coba Soal)</label>
+                                <textarea id="admPracticeKisi" rows="2" class="w-full border border-slate-300 rounded-xl p-2.5"></textarea>
+                            </div>
+
+                            <!-- Daftar Butir Soal Interaktif -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <label class="font-bold text-slate-700">Daftar Butir Soal & Pembahasan Otomatis:</label>
+                                    <button onclick="addAdminPracticeQuestionRow()" type="button" class="text-xs font-extrabold bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full">
+                                        + Tambah Nomor Soal
+                                    </button>
+                                </div>
+                                <div id="admPracticeQuestionsBox" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <button onclick="saveAdminPracticeSet()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 rounded-full shadow transition">
+                                    <i class="fa-solid fa-check-double mr-1"></i> Simpan Soal Latihan <span id="admPracticeBtnLabel">TKA</span>
+                                </button>
+                                <button onclick="previewAdminPracticeSet()" type="button" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold py-2.5 rounded-full shadow transition">
+                                    <i class="fa-solid fa-eye mr-1"></i> Simpan & Lihat Tampilan Coba Soal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL 1: APLIKASI LANGSUNG COBA SOAL (KISI-KISI DI ATAS)  -->
+    <!-- ========================================================= -->
+    <div id="quizModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-200">
+            <!-- Header Modal Quiz -->
+            <div class="bg-gradient-to-r from-sky-600 to-emerald-600 text-white p-5 flex justify-between items-center sticky top-0 z-20">
+                <div>
+                    <span id="quizModalBadge" class="text-[10px] font-extrabold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">Aplikasi Coba Soal</span>
+                    <h3 id="quizModalTitle" class="font-extrabold text-base mt-1">Simulasi Latihan Bahasa Indonesia</h3>
+                </div>
+                <button onclick="closeQuizModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold text-lg">&times;</button>
+            </div>
+
+            <div class="p-5 space-y-4 text-xs">
+                <!-- KISI-KISI DI ATAS APLIKASI COBA SOAL -->
+                <div class="p-4 rounded-2xl bg-sky-50 border border-sky-200 space-y-1">
+                    <p class="font-extrabold text-sky-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-clipboard-list text-sky-600"></i> Kisi-Kisi Acuan Soal:
+                    </p>
+                    <p id="quizModalKisi" class="text-slate-700 leading-relaxed"></p>
+                </div>
+
+                <!-- Tempat Pertanyaan Interaktif -->
+                <div id="quizQuestionsContainer" class="space-y-4"></div>
+
+                <!-- Tombol Selesai & Lihat Skor -->
+                <div id="quizActionBox" class="pt-2">
+                    <button onclick="submitPracticeQuiz()" class="w-full bg-gradient-to-r from-sky-600 to-emerald-600 hover:from-sky-700 hover:to-emerald-700 text-white font-extrabold py-3 rounded-full shadow-lg transition text-sm">
+                        <i class="fa-solid fa-paper-plane mr-1.5"></i> Selesai Kerjakan & Lihat Pembahasan + Skor
+                    </button>
+                </div>
+
+                <!-- Kotak Hasil Skor & Pembahasan Otomatis (Muncul Setelah Selesai) -->
+                <div id="quizResultBox" class="hidden p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 space-y-3">
+                    <div class="flex items-center justify-between border-b border-emerald-200 pb-3">
+                        <div>
+                            <span class="text-[10px] font-extrabold uppercase text-emerald-700">Hasil Evaluasi Otomatis</span>
+                            <h4 class="text-base font-extrabold text-slate-900">Skor Akhir Anda:</h4>
+                        </div>
+                        <div id="quizFinalScoreBadge" class="text-2xl font-black bg-emerald-600 text-white px-4 py-1.5 rounded-2xl shadow">
+                            100
+                        </div>
+                    </div>
+                    <div id="quizExplanationList" class="space-y-2.5 text-slate-700"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL 2: PEMBAYARAN REKENING & AKTIVASI PERANGKAT         -->
+    <!-- ========================================================= -->
+    <div id="paymentModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full max-h-[94vh] overflow-y-auto shadow-2xl border border-slate-200">
+            <div class="bg-gradient-to-r from-sky-600 to-blue-700 text-white p-5 flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300">Kode Unik Otomatis & Laporan Transfer WA</span>
+                    <h3 id="payModalPkgTitle" class="font-extrabold text-sm mt-0.5">Paket Soal</h3>
+                </div>
+                <button onclick="closePaymentModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white font-bold">&times;</button>
+            </div>
+
+            <div class="p-5 space-y-4 text-xs">
+                <!-- Info Otomatis -->
+                <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
+                    <i class="fa-solid fa-bolt text-emerald-600 text-base mt-0.5"></i>
+                    <p class="text-[11px] leading-relaxed text-slate-700">
+                        <strong>Kode Unik Anda dibuat otomatis!</strong> Silakan transfer sesuai nominal unik di bawah, lalu klik tombol konfirmasi agar <strong>laporan transfer otomatis terkirim ke WA Admin</strong> dan 3 Ruang Unduh langsung terbuka.
+                    </p>
+                </div>
+
+                <!-- Rincian Nominal + Kode Unik Otomatis -->
+                <div class="p-4 rounded-2xl bg-sky-50/70 border border-sky-200 space-y-2.5">
+                    <div class="space-y-1 border-b border-sky-200 pb-2.5">
+                        <div class="flex justify-between items-center text-[11px] text-slate-600">
+                            <span>Harga Paket:</span>
+                            <span id="payBasePrice" class="font-bold">Rp 35.000</span>
+                        </div>
+                        <div class="flex justify-between items-center text-[11px] text-amber-800">
+                            <span>Kode Unik Transfer (Otomatis):</span>
+                            <span id="payUniqueDigits" class="font-mono font-extrabold bg-amber-100 px-2 py-0.5 rounded">+ Rp 125</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="text-slate-800 font-extrabold">Total Transfer Unik:</span>
+                            <div class="flex items-center gap-2">
+                                <span id="payModalPrice" class="text-base font-black text-sky-700">Rp 35.125</span>
+                                <button onclick="copyUniqueAmount()" type="button" class="text-[10px] bg-white border border-sky-200 px-2 py-0.5 rounded-lg font-bold text-sky-700 hover:bg-sky-100">
+                                    Salin Nominal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="text-[11px] text-slate-400 block">Transfer ke Rekening Resmi:</span>
+                        <p id="payBankName" class="font-bold text-slate-800">Bank BRI</p>
+                        <div class="flex items-center justify-between bg-white border border-sky-200 rounded-xl px-3 py-2 mt-1">
+                            <span id="payBankNumber" class="font-mono font-extrabold text-sm text-sky-900">0341-01-004589-53-2</span>
+                            <button onclick="copyBankNumber()" type="button" class="text-sky-600 hover:text-sky-800 font-bold text-[11px]">
+                                <i class="fa-regular fa-copy mr-1"></i>Salin Rekening
+                            </button>
+                        </div>
+                        <p id="payBankHolder" class="text-slate-600 font-medium mt-1">a.n. Bunda Romiyatun, S.Pd.</p>
+                    </div>
+                    <div class="pt-1 flex justify-between text-[11px] text-slate-500">
+                        <span>WA Admin: <strong id="payWaNumber" class="text-slate-800">0812-8899-7766</strong></span>
+                        <span>ID Media: <strong id="payDeviceId" class="font-mono text-sky-700">...</strong></span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- 1. Nomor WA Pembeli -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">1. Nomor WhatsApp Pembeli (Untuk Watermark & Laporan)</label>
+                        <input type="tel" id="buyerEmailInput" value="" placeholder="Contoh: 081234567890" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+
+                    <!-- 2. Kode Unik Aktivasi (Terisi Otomatis) -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="font-bold text-slate-700">2. Kode Unik Paket & Aktivasi (Otomatis)</label>
+                            <span class="text-[10px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Terisi Otomatis</span>
+                        </div>
+                        <input type="text" id="buyerCodeInput" readonly class="w-full border border-emerald-300 bg-emerald-50/60 text-emerald-900 font-extrabold rounded-xl px-3.5 py-2.5 font-mono uppercase cursor-not-allowed">
+                    </div>
+
+                    <!-- 3. Lampiran Bukti Transfer (Opsional) -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">3. Pilih Foto/Struk Bukti Transfer (Opsional)</label>
+                        <input type="file" id="buyerProofFile" accept="image/*,.pdf" class="w-full text-[11px] text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-sky-100 file:text-sky-800 hover:file:bg-sky-200">
+                    </div>
+
+                    <!-- Tombol Otomatis Lapor ke WA Admin & Buka 3 Ruang Unduh -->
+                    <button onclick="processAutoTransferAndUnlock()" type="button" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 text-xs">
+                        <i class="fa-brands fa-whatsapp text-base"></i> Sudah Transfer: Kirim Laporan Otomatis ke WA Admin & Buka Paket
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL 3: LOGIN OTENTIKASI ADMIN (HANYA USERNAME & PASS)   -->
+    <!-- ========================================================= -->
+    <div id="adminLoginModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xs w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-sky-600"></i> Login Pengelola
+                </h3>
+                <button onclick="closeAdminLoginModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Username</label>
+                    <input type="text" id="adminUserField" placeholder="Username" class="w-full border border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Password</label>
+                    <input type="password" id="adminPassField" placeholder="Password" onkeydown="if(event.key==='Enter') verifyAdminCredentials()" class="w-full border border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+                <button onclick="verifyAdminCredentials()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2.5 rounded-full transition shadow">
+                    Masuk
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- LOGIKA JAVASCRIPT UTAMA                                   -->
+    <!-- ========================================================= -->
+    <script>
+        // 1. Format Rupiah
+        function formatRupiah(num) {
+            return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+        }
+
+        // 2. Toast Notification (Pengganti alert)
+        let toastTimer = null;
+        function showToast(msg, isError = false) {
+            const box = document.getElementById('toastBox');
+            const icon = document.getElementById('toastIcon');
+            const text = document.getElementById('toastMessage');
+            text.innerText = msg;
+            icon.className = isError
+                ? 'fa-solid fa-triangle-exclamation text-rose-400 text-lg'
+                : 'fa-solid fa-circle-check text-emerald-400 text-lg';
+            box.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => box.classList.add('hidden'), 3800);
+        }
+
+        // 3. ID Media / Device ID Binding
+        function initDeviceId() {
+            let id = localStorage.getItem('lb_device_id');
+            if (!id) {
+                id = 'SMP-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+                localStorage.setItem('lb_device_id', id);
+            }
+            return id;
+        }
+        const currentDeviceId = initDeviceId();
+        document.getElementById('bannerDeviceId').innerText = currentDeviceId;
+
+        // 4. Data Pengaturan Rekening Default
+        const defaultBankSettings = {
+            bankName: 'Bank BRI (Transfer & QRIS)',
+            bankNumber: '0341-01-004589-53-2',
+            bankHolder: 'a.n. Bunda Romiyatun, S.Pd.',
+            waNumber: '0812-8899-7766',
+            licenseCode: 'LUNAS2026'
+        };
+
+        function getBankSettings() {
+            const saved = localStorage.getItem('lb_bank_settings');
+            return saved ? JSON.parse(saved) : defaultBankSettings;
+        }
+
+        // 5. Data Default Paket Katalog (Kelas VII, VIII, IX)
+        const defaultPackages = [
+            {
+                id: 'pkg-7-1',
+                title: 'Paket Modul Dasar & Soal HOTS Bahasa Indonesia Kelas VII',
+                grade: 'Kelas VII',
+                price: 35000,
+                badge: '35 Butir Soal HOTS',
+                desc: 'Mencakup Teks Deskripsi, Puisi Rakyat, Cerita Fantasi, dan Teks Prosedur lengkap dengan pembahasan.',
+                kisi: '1. Mengidentifikasi ciri objek dan rincian informasi pada Teks Deskripsi.\n2. Menyimpulkan isi dan amanat pantun/syair.\n3. Menganalisis struktur orientasi-komplikasi-resolusi Teks Fantasi.\n4. Menelaah urutan langkah dan kaidah kebahasaan Teks Prosedur.',
+                soal: 'SOAL 1:\nPerhatikan kutipan teks deskripsi berikut!\n"Pantai Parangtritis memikat mata dengan hamparan pasir hitam berkilau saat diterpa sinar mentari sore..."\nCitraan yang dominan pada kalimat tersebut adalah...\nA. Pendengaran\nB. Penglihatan\nC. Penciuman\nD. Perabaan\n\nSOAL 2:\nKalimat perintah yang tepat dalam teks prosedur membuat minuman herbal adalah...\nA. Sebaiknya jahe dibakar dulu.\nB. Mengapa jahe harus digeprek?\nC. Rebuslah air hingga mendidih lalu masukkan jahe!\nD. Jahe yang segar sangat baik untuk tubuh.',
+                bahasan: 'PEMBAHASAN SOAL 1:\nKunci: B (Penglihatan).\nFrasa "memikat mata" dan "hamparan pasir hitam berkilau" merangsang indra penglihatan pembaca.\n\nPEMBAHASAN SOAL 2:\nKunci: C.\nMenggunakan kata kerja imperatif (Rebuslah, masukkan) yang tegas dan urut.'
+            },
+            {
+                id: 'pkg-7-2',
+                title: 'Paket Teks Berita & Buku Fiksi/Nonfiksi Kelas VII',
+                grade: 'Kelas VII',
+                price: 35000,
+                badge: '30 Butir Soal Literasi',
+                desc: 'Latihan mendalam unsur ADIKSIMBA pada Teks Berita, Teks Tanggapan, dan Surat Pribadi/Dinas.',
+                kisi: '1. Menentukan unsur 5W+1H (ADIKSIMBA) dalam teks berita aktual.\n2. Membedakan struktur dan kebahasaan surat pribadi dengan surat dinas.',
+                soal: 'SOAL 1:\nUnsur berita yang menjawab pertanyaan "mengapa peristiwa itu terjadi" disebut...\nA. Apa\nB. Siapa\nC. Mengapa\nD. Bagaimana',
+                bahasan: 'PEMBAHASAN:\nKunci: C (Mengapa). Menjelaskan latar belakang atau penyebab terjadinya peristiwa dalam berita.'
+            },
+            {
+                id: 'pkg-8-1',
+                title: 'Paket Eksplorasi Teks Eksposisi, Iklan & Puisi Kelas VIII',
+                grade: 'Kelas VIII',
+                price: 40000,
+                badge: '40 Butir Soal HOTS',
+                desc: 'Pendalaman materi Teks Eksposisi, Iklan/Slogan/Poster, Teks Eksplanasi, dan Ulasan Karya.',
+                kisi: '1. Membedakan fakta dan opini dalam paragraf Teks Eksposisi.\n2. Menentukan pesan persuasif dalam slogan pendidikan.\n3. Menganalisis hubungan kausalitas dalam Teks Eksplanasi fenomena alam.',
+                soal: 'SOAL 1:\nManakah kalimat di bawah ini yang merupakan fakta dalam teks eksposisi?\nA. Menurut saya, penghijauan kota ini sangat indah.\nB. Rasanya udara pagi ini jauh lebih sejuk dari kemarin.\nC. Dinas Lingkungan Hidup menanam 1.500 bibit pohon bakau pada 12 Mei 2026.\nD. Sebaiknya warga ikut menjaga kebersihan taman.',
+                bahasan: 'PEMBAHASAN:\nKunci: C.\nKalimat fakta memuat data angka (1.500 bibit) dan waktu kejadian yang terverifikasi.'
+            },
+            {
+                id: 'pkg-8-2',
+                title: 'Paket Teks Persuasi & Drama Bahasa Indonesia Kelas VIII',
+                grade: 'Kelas VIII',
+                price: 40000,
+                badge: '35 Butir Soal Literasi',
+                desc: 'Kupas tuntas struktur ajakan Teks Persuasi serta konflik, watak tokoh, dan latar naskah Drama.',
+                kisi: '1. Menemukan kalimat ajakan dalam simpulan teks persuasi.\n2. Menganalisis kramagung (petunjuk lakuan) dan wawancang (dialog) dalam naskah drama.',
+                soal: 'SOAL 1:\nPetunjuk perilaku, ekspresi, atau tindakan yang harus dilakukan tokoh dalam naskah drama dan biasanya ditulis dalam tanda kurung disebut...\nA. Prolog\nB. Epilog\nC. Kramagung\nD. Wawancang',
+                bahasan: 'PEMBAHASAN:\nKunci: C (Kramagung). Wawancang adalah dialog pokok, sedangkan kramagung adalah petunjuk lakuan.'
+            },
+            {
+                id: 'pkg-9-1',
+                title: 'Paket Sukses Ujian Sekolah & TKA Kelas IX',
+                grade: 'Kelas IX',
+                price: 45000,
+                badge: '40 Butir Soal HOTS',
+                desc: 'Mencakup Teks Diskusi, Artikel Ilmiah Populer, Teks Laporan Percobaan, dan Cerita Inspiratif.',
+                kisi: '1. Mengevaluasi argumen pro dan kontra dalam Teks Diskusi.\n2. Mengidentifikasi ciri kebahasaan Artikel Ilmiah Populer.\n3. Menyimpulkan nilai empati dan amanat Teks Cerita Inspiratif.',
+                soal: 'SOAL 1:\n"Penggunaan gawai di sekolah membantu akses kamus digital, namun di sisi lain berpotensi mengurangi interaksi sosial antarsiswa."\nKutipan tersebut merupakan bagian struktur teks diskusi yaitu...\nA. Isu\nB. Argumen pro dan kontra\nC. Lampiran\nD. Bibliografi',
+                bahasan: 'PEMBAHASAN:\nKunci: B (Argumen pro dan kontra).\nKutipan menampilkan sisi manfaat sekaligus sisi dampak negatif secara berimbang.'
+            },
+            {
+                id: 'pkg-9-2',
+                title: 'Paket Simulasi TKA & Pidato Persuasif Kelas IX',
+                grade: 'Kelas IX',
+                price: 45000,
+                badge: '40 Butir Soal TKA',
+                desc: 'Persiapan intensif Tes Kemampuan Akademik (TKA) Bahasa Indonesia SMP Kelas IX dengan analisis mendalam.',
+                kisi: '1. Menentukan tujuan dan kalimat emotif dalam Pidato Persuasif.\n2. Menyunting ejaan (PUEBI/EYD V) dan tanda baca pada paragraf rumpang.',
+                soal: 'SOAL 1:\n"Marilah kita mulai memilah sampah dari meja belajar kita sendiri demi masa depan bumi yang lebih bersih!"\nKalimat pidato di atas menggunakan pendekatan...\nA. Etika\nB. Emosi\nC. Logika\nD. Biografi',
+                bahasan: 'PEMBAHASAN:\nKunci: B/A. Menggugah semangat dan kesadaran moral pendengar untuk bertindak nyata.'
+            }
+        ];
+
+        function getPackages() {
+            const saved = localStorage.getItem('lb_packages');
+            return saved ? JSON.parse(saved) : defaultPackages;
+        }
+
+        // 6. Data Default Soal Latihan Tersendiri (Simulasi TKA, Ulangan Semester, Ulangan Harian)
+        const defaultPracticeSets = {
+            TKA: {
+                title: 'Simulasi Tes Kemampuan Akademik (TKA) Bahasa Indonesia SMP',
+                kisi: '1. Mengevaluasi argumen pro dan kontra dalam Teks Diskusi.\n2. Menyimpulkan gagasan utama dan solusi dalam Artikel Ilmiah Populer.\n3. Menganalisis struktur dan kaidah kebahasaan Pidato Persuasif.',
+                questions: [
+                    {
+                        q: 'Kebijakan pembatasan plastik sekali pakai di kantin sekolah menuai tanggapan beragam. Pihak pro menilai langkah ini efektif menekan limbah, sedangkan pihak kontra mengkhawatirkan kerepotan mencuci wadah makan. Manakah solusi sintesis terbaik?',
+                        options: [
+                            'A. Menutup kantin sekolah selama satu semester penuh.',
+                            'B. Menyediakan layanan peminjaman wadah makan terpusat yang dikelola koperasi sekolah.',
+                            'C. Membebaskan penggunaan plastik tanpa aturan.',
+                            'D. Memberikan sanksi skorsing bagi siswa yang membawa botol minum.'
+                        ],
+                        answer: 1,
+                        explanation: 'Pilihan B menjembatani kedua argumen (mengurangi sampah plastik sekaligus mengatasi kerepotan wadah).'
+                    },
+                    {
+                        q: 'Cermati kalimat berikut: "Para siswa-siswi diharapkan berkumpul di aula tepat waktu." Perbaikan kalimat efektif yang tepat adalah...',
+                        options: [
+                            'A. Para siswa diharapkan berkumpul di aula tepat waktu.',
+                            'B. Para semua siswa-siswi diharapkan berkumpul di aula.',
+                            'C. Siswa-siswi sekalian para pelajar berkumpul di aula.',
+                            'D. Diharapkan kepada para siswa-siswi semuanya berkumpul.'
+                        ],
+                        answer: 0,
+                        explanation: 'Kata "para" sudah bermakna jamak sehingga tidak perlu diikuti bentuk ulang "siswa-siswi".'
+                    }
+                ]
+            },
+            SEMESTER: {
+                title: 'Latihan Ulangan Semester Bahasa Indonesia SMP',
+                kisi: '1. Menentukan ide pokok paragraf Teks Eksposisi.\n2. Menganalisis unsur intrinsik (watak tokoh dan amanat) dalam Cerpen.\n3. Menelaah struktur Teks Eksplanasi.',
+                questions: [
+                    {
+                        q: 'Gagasan utama yang terletak di awal paragraf lalu diikuti kalimat-kalimat penjelas disebut paragraf...',
+                        options: [
+                            'A. Induktif',
+                            'B. Deduktif',
+                            'C. Naratif',
+                            'D. Deskriptif'
+                        ],
+                        answer: 1,
+                        explanation: 'Paragraf deduktif menempatkan kalimat utama di awal paragraf.'
+                    },
+                    {
+                        q: '"Meski hujan deras mengguyur sejak subuh, Raka tetap membungkus koran dagangannya dengan plastik agar tidak basah sebelum diantar ke pelanggan." Watak tokoh Raka adalah...',
+                        options: [
+                            'A. Mudah menyerah',
+                            'B. Bertanggung jawab dan gigih',
+                            'C. Sombong dan angkuh',
+                            'D. Ceroboh'
+                        ],
+                        answer: 1,
+                        explanation: 'Tindakan melindungi koran dan tetap mengantarnya saat hujan deras membuktikan sifat gigih dan bertanggung jawab.'
+                    }
+                ]
+            },
+            HARIAN: {
+                title: 'Latihan Soal Harian Bahasa Indonesia SMP',
+                kisi: '1. Mengidentifikasi struktur dan ciri kebahasaan Teks Deskripsi & Teks Prosedur.\n2. Membedakan kalimat fakta dan opini sederhana.',
+                questions: [
+                    {
+                        q: 'Bagian awal dalam Teks Deskripsi yang berisi nama objek, lokasi, dan gambaran umum objek disebut...',
+                        options: [
+                            'A. Identifikasi / Gambaran Umum',
+                            'B. Deskripsi Bagian',
+                            'C. Simpulan / Kesan',
+                            'D. Komplikasi'
+                        ],
+                        answer: 0,
+                        explanation: 'Identifikasi berisi pengenalan nama objek dan lokasi secara umum sebelum masuk ke rincian bagian.'
+                    },
+                    {
+                        q: 'Kalimat berikut yang mengandung kata kerja imperatif (perintah) pada teks prosedur adalah...',
+                        options: [
+                            'A. Mengapa adonan harus didiamkan selama 15 menit?',
+                            'B. Aduklah adonan secara perlahan hingga tercampur rata!',
+                            'C. Kue tradisional ini berasal dari Jawa Tengah.',
+                            'D. Banyak orang menyukai rasa manis pada kue tersebut.'
+                        ],
+                        answer: 1,
+                        explanation: 'Kata "Aduklah" merupakan verba imperatif yang memerintahkan pembaca melakukan suatu langkah.'
+                    }
+                ]
+            }
+        };
+
+        function getPracticeSets() {
+            const saved = localStorage.getItem('lb_practice_sets');
+            return saved ? JSON.parse(saved) : defaultPracticeSets;
+        }
+
+        // 7. Menampilkan & Menyembunyikan Daftar Paket Katalog Berdasarkan Kelas (Maks 9 Paket + Tombol Lainnya)
+        let currentSelectedGrade = 'Kelas VII';
+        let showAllPackagesFlag = false;
+
+        function selectGradeAndShowCatalog(grade) {
+            currentSelectedGrade = grade;
+            showAllPackagesFlag = false;
+            const section = document.getElementById('catalogSection');
+            section.classList.remove('hidden');
+            renderCatalogGrid();
+            section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideCatalogSection() {
+            document.getElementById('catalogSection').classList.add('hidden');
+        }
+
+        function showAllRemainingPackages() {
+            showAllPackagesFlag = true;
+            renderCatalogGrid();
+        }
+
+        function renderCatalogGrid() {
+            const allPkgs = getPackages();
+            const filtered = currentSelectedGrade === 'Semua'
+                ? allPkgs
+                : allPkgs.filter(p => p.grade === currentSelectedGrade);
+
+            document.getElementById('activeGradeBadge').innerText =
+                `MENAMPILKAN PAKET PILIHAN: ${currentSelectedGrade.toUpperCase()} (${filtered.length} PAKET)`;
+
+            // Highlight tombol filter aktif
+            const mapBtn = {
+                'Semua': 'filterBtnSemua',
+                'Kelas VII': 'filterBtnVII',
+                'Kelas VIII': 'filterBtnVIII',
+                'Kelas IX': 'filterBtnIX'
+            };
+            Object.keys(mapBtn).forEach(k => {
+                const btn = document.getElementById(mapBtn[k]);
+                if (k === currentSelectedGrade) {
+                    btn.className = 'px-3 py-1 rounded-full text-xs font-extrabold bg-sky-600 text-white shadow';
+                } else {
+                    btn.className = 'px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+                }
+            });
+
+            const unlockedMap = JSON.parse(localStorage.getItem('lb_unlocked_packages') || '{}');
+            const limit = showAllPackagesFlag ? filtered.length : 9;
+            const visiblePackages = filtered.slice(0, limit);
+
+            const grid = document.getElementById('packageGrid');
+            if (visiblePackages.length === 0) {
+                grid.innerHTML = `<div class="col-span-3 text-center py-8 text-slate-500 text-xs font-bold">Belum ada paket untuk ${currentSelectedGrade}. Admin dapat mengunggahnya melalui panel pengelola.</div>`;
+            } else {
+                grid.innerHTML = visiblePackages.map(pkg => {
+                    const isUnlocked = unlockedMap[pkg.id] && unlockedMap[pkg.id].deviceId === currentDeviceId;
+                    const borderColor = pkg.grade === 'Kelas VII' ? 'border-t-sky-500' : (pkg.grade === 'Kelas VIII' ? 'border-t-emerald-500' : 'border-t-orange-500');
+                    const badgeClass = pkg.grade === 'Kelas VII' ? 'bg-sky-100 text-sky-800' : (pkg.grade === 'Kelas VIII' ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-100 text-orange-800');
+
+                    return `
+                        <div class="bg-white rounded-2xl p-4 border border-slate-200 border-t-4 ${borderColor} shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center text-[11px] mb-2">
+                                    <span class="font-extrabold px-2.5 py-0.5 rounded-full ${badgeClass}">${pkg.grade}</span>
+                                    <span class="text-slate-500 font-semibold"><i class="fa-regular fa-file-lines mr-1"></i>${pkg.badge || 'Paket Lengkap'}</span>
+                                </div>
+                                <h4 class="font-extrabold text-sm text-slate-900 leading-snug mb-1.5">${pkg.title}</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed mb-3">${pkg.desc}</p>
+
+                                <div class="mb-3">
+                                    <span class="text-[10px] font-extrabold uppercase text-slate-400 block mb-1">Isi 3 Ruang Unduh Paket:</span>
+                                    <div class="grid grid-cols-3 gap-1.5 text-[10px] font-extrabold text-center">
+                                        <div class="bg-sky-50 text-sky-800 border border-sky-200 rounded-lg py-1"><i class="fa-solid fa-list-check block mb-0.5"></i>1. Kisi-Kisi</div>
+                                        <div class="bg-amber-50 text-amber-800 border border-amber-200 rounded-lg py-1"><i class="fa-solid fa-file-pen block mb-0.5"></i>2. Soal</div>
+                                        <div class="bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg py-1"><i class="fa-solid fa-key block mb-0.5"></i>3. Bahasan</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-100">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-[11px] text-slate-500 font-semibold">Harga Paket (3 File):</span>
+                                    <span class="text-base font-black text-sky-700">${formatRupiah(pkg.price)}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="openPackageSampleQuiz('${pkg.id}')" class="py-2 px-3 rounded-full border border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-900 font-extrabold text-xs transition">
+                                        <i class="fa-solid fa-laptop-code mr-1"></i>Coba Soal
+                                    </button>
+                                    ${isUnlocked ? `
+                                        <button onclick="openUnlockedReader('${pkg.id}')" class="py-2 px-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition shadow">
+                                            <i class="fa-solid fa-folder-open mr-1"></i>Buka 3 Ruang
+                                        </button>
+                                    ` : `
+                                        <button onclick="openPaymentModal('${pkg.id}')" class="py-2 px-3 rounded-full bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-xs transition shadow">
+                                            <i class="fa-solid fa-cart-shopping mr-1"></i>Beli Paket
+                                        </button>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const loadMoreBox = document.getElementById('loadMoreContainer');
+            if (filtered.length > 9 && !showAllPackagesFlag) {
+                loadMoreBox.classList.remove('hidden');
+            } else {
+                loadMoreBox.classList.add('hidden');
+            }
+        }
+
+        // 8. Aplikasi Coba Soal Interaktif (TKA, Semester, Harian, maupun Contoh Paket)
+        let activeQuizData = null;
+
+        function openPracticeQuizByType(typeKey) {
+            const sets = getPracticeSets();
+            const set = sets[typeKey] || sets.TKA;
+            activeQuizData = {
+                badge: 'LATIHAN ' + typeKey,
+                title: set.title,
+                kisi: set.kisi,
+                questions: set.questions
+            };
+            renderQuizModalContent();
+        }
+
+        function openPackageSampleQuiz(pkgId) {
+            const pkg = getPackages().find(p => p.id === pkgId);
+            const sets = getPracticeSets();
+            const fallbackQuestions = sets.TKA.questions;
+            activeQuizData = {
+                badge: 'CONTOH SOAL ' + (pkg ? pkg.grade.toUpperCase() : ''),
+                title: pkg ? pkg.title : 'Contoh Soal Paket',
+                kisi: pkg ? pkg.kisi : sets.TKA.kisi,
+                questions: fallbackQuestions
+            };
+            renderQuizModalContent();
+        }
+
+        function renderQuizModalContent() {
+            if (!activeQuizData) return;
+            document.getElementById('quizModalBadge').innerText = activeQuizData.badge;
+            document.getElementById('quizModalTitle').innerText = activeQuizData.title;
+            document.getElementById('quizModalKisi').innerText = activeQuizData.kisi;
+
+            const container = document.getElementById('quizQuestionsContainer');
+            container.innerHTML = activeQuizData.questions.map((item, idx) => `
+                <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-2.5">
+                    <p class="font-extrabold text-slate-900 leading-relaxed">${idx + 1}. ${item.q}</p>
+                    <div class="space-y-1.5">
+                        ${item.options.map((opt, optIdx) => `
+                            <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-sky-400 cursor-pointer transition">
+                                <input type="radio" name="quiz_q_${idx}" value="${optIdx}" class="text-sky-600 focus:ring-sky-500">
+                                <span class="text-slate-700 font-medium">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('quizResultBox').classList.add('hidden');
+            document.getElementById('quizActionBox').classList.remove('hidden');
+            document.getElementById('quizModal').classList.remove('hidden');
+        }
+
+        function closeQuizModal() {
+            document.getElementById('quizModal').classList.add('hidden');
+        }
+
+        function submitPracticeQuiz() {
+            if (!activeQuizData || !activeQuizData.questions) return;
+            const total = activeQuizData.questions.length;
+            let correctCount = 0;
+
+            const explanationHtml = activeQuizData.questions.map((item, idx) => {
+                const selectedEl = document.querySelector(`input[name="quiz_q_${idx}"]:checked`);
+                const userAns = selectedEl ? parseInt(selectedEl.value, 10) : -1;
+                const isCorrect = userAns === item.answer;
+                if (isCorrect) correctCount++;
+
+                const statusBadge = isCorrect
+                    ? '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-extrabold text-[10px]">✔ Benar</span>'
+                    : '<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full font-extrabold text-[10px]">✘ Kurang Tepat</span>';
+
+                return `
+                    <div class="p-3 rounded-xl bg-white border border-emerald-200 space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-extrabold text-slate-900">Soal Nomor ${idx + 1}</span>
+                            ${statusBadge}
+                        </div>
+                        <p class="text-[11px] text-emerald-800 font-bold">Kunci: ${item.options[item.answer]}</p>
+                        <p class="text-[11px] text-slate-600 leading-relaxed"><strong>Pembahasan:</strong> ${item.explanation}</p>
+                    </div>
+                `;
+            }).join('');
+
+            const finalScore = Math.round((correctCount / total) * 100);
+            document.getElementById('quizFinalScoreBadge').innerText = `${finalScore} / 100`;
+            document.getElementById('quizExplanationList').innerHTML = explanationHtml;
+            document.getElementById('quizResultBox').classList.remove('hidden');
+            showToast(`Latihan selesai! Skor Anda: ${finalScore}`);
+        }
+
+        // 9. Pembayaran & Penguncian Perangkat (Kode Unik Otomatis & Laporan WA Otomatis)
+        let selectedPackageForPurchase = null;
+        let currentUniqueDigits = 0;
+        let currentTotalUniquePrice = 0;
+        let currentAutoOrderCode = '';
+
+        function openPaymentModal(pkgId) {
+            const pkg = getPackages().find(p => p.id === pkgId);
+            if (!pkg) return;
+            selectedPackageForPurchase = pkg;
+
+            // Buat 3 digit kode unik transfer otomatis (101 - 899) dan Kode Aktivasi Otomatis
+            currentUniqueDigits = Math.floor(101 + Math.random() * 798);
+            currentTotalUniquePrice = Number(pkg.price || 0) + currentUniqueDigits;
+            const cleanDev = currentDeviceId.replace(/[^A-Z0-9]/g, '').slice(-4);
+            currentAutoOrderCode = `LB-${cleanDev}-${currentUniqueDigits}`;
+
+            const bank = getBankSettings();
+            document.getElementById('payModalPkgTitle').innerText = pkg.title;
+            document.getElementById('payBasePrice').innerText = formatRupiah(pkg.price);
+            document.getElementById('payUniqueDigits').innerText = '+ Rp ' + currentUniqueDigits;
+            document.getElementById('payModalPrice').innerText = formatRupiah(currentTotalUniquePrice);
+            document.getElementById('payBankName').innerText = bank.bankName;
+            document.getElementById('payBankNumber').innerText = bank.bankNumber;
+            document.getElementById('payBankHolder').innerText = bank.bankHolder;
+            document.getElementById('payWaNumber').innerText = bank.waNumber;
+            document.getElementById('payDeviceId').innerText = currentDeviceId;
+
+            // Otomatis isi Kode Unik di kolom pembeli
+            document.getElementById('buyerCodeInput').value = currentAutoOrderCode;
+            const proofInput = document.getElementById('buyerProofFile');
+            if (proofInput) proofInput.value = '';
+
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        function copyBankNumber() {
+            const num = document.getElementById('payBankNumber').innerText;
+            const temp = document.createElement('input');
+            temp.value = num;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast('Nomor rekening berhasil disalin!');
+        }
+
+        function copyUniqueAmount() {
+            const temp = document.createElement('input');
+            temp.value = String(currentTotalUniquePrice);
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast('Nominal unik ' + formatRupiah(currentTotalUniquePrice) + ' berhasil disalin!');
+        }
+
+        // Generator Kode Unik Berdasarkan ID Media Pembeli (Tetap tersedia di Admin)
+        function computeDeviceActivationCode(deviceId) {
+            const clean = (deviceId || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (!clean) return '';
+            let sum = 0;
+            for (let i = 0; i < clean.length; i++) {
+                sum += clean.charCodeAt(i) * (i + 3);
+            }
+            const suffix = (sum % 900 + 100).toString();
+            return 'LB-' + clean.slice(-4) + suffix;
+        }
+
+        function generateDeviceSpecificCode() {
+            const devInput = document.getElementById('adminTargetDeviceId').value.trim();
+            const outEl = document.getElementById('generatedDeviceCodeOutput');
+            if (!devInput) {
+                outEl.innerText = '-';
+                return;
+            }
+            outEl.innerText = computeDeviceActivationCode(devInput);
+        }
+
+        function copyGeneratedDeviceCode() {
+            const code = document.getElementById('generatedDeviceCodeOutput').innerText;
+            if (!code || code === '-') {
+                showToast('Masukkan ID Media pembeli terlebih dahulu.', true);
+                return;
+            }
+            const tempInput = document.createElement('input');
+            tempInput.value = code;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('Kode unik ' + code + ' berhasil disalin!');
+        }
+
+        function getOrderLogs() {
+            const saved = localStorage.getItem('lb_order_logs');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        // Proses Otomatis: Kirim Laporan Transfer ke WA Admin & Buka 3 Ruang Unduh
+        function processAutoTransferAndUnlock() {
+            if (!selectedPackageForPurchase) return;
+            const buyerWa = document.getElementById('buyerEmailInput').value.trim();
+            if (!buyerWa) {
+                showToast('Mohon isi Nomor WhatsApp Anda pada kolom 1 terlebih dahulu.', true);
+                document.getElementById('buyerEmailInput').focus();
+                return;
+            }
+
+            const proofInput = document.getElementById('buyerProofFile');
+            const proofFileName = (proofInput && proofInput.files && proofInput.files[0])
+                ? proofInput.files[0].name
+                : 'Menyusul / Terlampir di Chat WA';
+
+            const bank = getBankSettings();
+            let cleanAdminWa = (bank.waNumber || '').replace(/[^0-9]/g, '');
+            if (cleanAdminWa.startsWith('0')) {
+                cleanAdminWa = '62' + cleanAdminWa.substring(1);
+            }
+
+            const timeStr = new Date().toLocaleString('id-ID');
+
+            // 1. Simpan ke Log Laporan Transfer di Panel Admin
+            const logs = getOrderLogs();
+            logs.unshift({
+                orderCode: currentAutoOrderCode,
+                pkgTitle: selectedPackageForPurchase.title,
+                grade: selectedPackageForPurchase.grade,
+                buyerWa: buyerWa,
+                deviceId: currentDeviceId,
+                totalTransfer: currentTotalUniquePrice,
+                uniqueDigits: currentUniqueDigits,
+                proofFile: proofFileName,
+                time: timeStr
+            });
+            localStorage.setItem('lb_order_logs', JSON.stringify(logs));
+
+            // 2. Kunci & Buka 3 Ruang Unduh di Perangkat Pembeli Ini
+            const unlockedMap = JSON.parse(localStorage.getItem('lb_unlocked_packages') || '{}');
+            unlockedMap[selectedPackageForPurchase.id] = {
+                buyerWa: buyerWa,
+                deviceId: currentDeviceId,
+                orderCode: currentAutoOrderCode,
+                unlockedAt: new Date().toISOString()
+            };
+            localStorage.setItem('lb_unlocked_packages', JSON.stringify(unlockedMap));
+
+            // 3. Buat Format Laporan Transfer Otomatis ke WhatsApp Admin
+            const message = `*LAPORAN TRANSFER OTOMATIS - LENTERA BAHASA*\n` +
+                            `----------------------------------------\n` +
+                            `• *Kode Unik Pesanan:* ${currentAutoOrderCode}\n` +
+                            `• *Paket Dibeli:* ${selectedPackageForPurchase.title} (${selectedPackageForPurchase.grade})\n` +
+                            `• *Harga Paket:* ${formatRupiah(selectedPackageForPurchase.price)}\n` +
+                            `• *Kode Unik Transfer:* +Rp ${currentUniqueDigits}\n` +
+                            `• *TOTAL TRANSFER UNIK:* *${formatRupiah(currentTotalUniquePrice)}*\n` +
+                            `• *Tujuan:* ${bank.bankName} (${bank.bankNumber})\n` +
+                            `----------------------------------------\n` +
+                            `• *No. WA Pembeli:* ${buyerWa}\n` +
+                            `• *ID Media Terkunci:* ${currentDeviceId}\n` +
+                            `• *Bukti Transfer:* ${proofFileName}\n` +
+                            `• *Waktu:* ${timeStr}\n\n` +
+                            `Saya sudah melakukan transfer sesuai nominal kode unik di atas. Terima kasih Admin Lentera Bahasa!`;
+
+            const waUrl = `https://wa.me/${cleanAdminWa}?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+
+            closePaymentModal();
+            renderCatalogGrid();
+            openUnlockedReader(selectedPackageForPurchase.id);
+            showToast('Laporan transfer otomatis dikirim ke WA Admin & 3 Ruang Unduh langsung dibuka!');
+        }
+
+        // 10. Ruang Unduh & Pembaca Dokumen Aman (3 Ruang)
+        let activeReaderPackage = null;
+        let activeReaderRoom = 'kisi';
+        let isAdminSessionActive = false;
+
+        function openUnlockedReader(pkgId, forceAdminPreview = false) {
+            const unlockedMap = JSON.parse(localStorage.getItem('lb_unlocked_packages') || '{}');
+            const record = unlockedMap[pkgId];
+
+            if (!forceAdminPreview && !isAdminSessionActive && (!record || record.deviceId !== currentDeviceId)) {
+                showToast('Akses ditolak! Paket ini terkunci pada perangkat lain.', true);
+                return;
+            }
+
+            const pkg = getPackages().find(p => p.id === pkgId);
+            if (!pkg) return;
+            activeReaderPackage = pkg;
+
+            const buyerWaDisplay = record ? record.buyerWa : 'PRATINJAU-ADMIN (0812xxxx)';
+            const deviceIdDisplay = record ? record.deviceId : currentDeviceId;
+
+            document.getElementById('readerGradeBadge').innerText = pkg.grade;
+            document.getElementById('readerPkgTitle').innerText = pkg.title;
+            document.getElementById('readerBuyerWa').innerText = buyerWaDisplay;
+            document.getElementById('readerDeviceId').innerText = deviceIdDisplay;
+
+            const backAdminBtn = document.getElementById('readerBackToAdminBtn');
+            if (isAdminSessionActive) {
+                backAdminBtn.classList.remove('hidden');
+            } else {
+                backAdminBtn.classList.add('hidden');
+            }
+
+            const wmText = `WA: ${buyerWaDisplay} • MEDIA: ${deviceIdDisplay} • DILARANG MENGGANDAKAN`;
+            document.getElementById('watermarkLine1').innerText = wmText;
+            document.getElementById('watermarkLine2').innerText = wmText;
+
+            document.getElementById('viewStore').classList.add('hidden');
+            document.getElementById('viewAdmin').classList.add('hidden');
+            document.getElementById('viewReader').classList.remove('hidden');
+
+            switchReaderRoom('kisi');
+        }
+
+        function switchReaderRoom(roomKey) {
+            if (!activeReaderPackage) return;
+            activeReaderRoom = roomKey;
+
+            const rooms = ['kisi', 'soal', 'bahasan'];
+            rooms.forEach(r => {
+                const btn = document.getElementById('roomBtn-' + r);
+                if (r === roomKey) {
+                    btn.className = 'p-4 rounded-2xl border-2 border-sky-600 bg-sky-600 text-white text-left shadow transition flex items-center justify-between';
+                } else {
+                    btn.className = 'p-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 text-left shadow-sm hover:border-sky-400 transition flex items-center justify-between';
+                }
+            });
+
+            const titles = {
+                kisi: 'RUANG 1: KISI-KISI MATERI & INDIKATOR SOAL',
+                soal: 'RUANG 2: NASKAH SOAL LATIHAN & UJIAN',
+                bahasan: 'RUANG 3: KUNCI JAWABAN & PEMBAHASAN LENGKAP'
+            };
+            const rawContent = activeReaderPackage[roomKey] || 'Konten belum tersedia.';
+            const formatted = rawContent.replace(/\n/g, '<br>');
+
+            document.getElementById('readerRoomContent').innerHTML = `
+                <div class="border-b border-slate-200 pb-2 mb-3 flex justify-between items-center">
+                    <h3 class="font-extrabold text-base text-sky-900">${titles[roomKey]}</h3>
+                    <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">Hanya Tampil di Media Ini</span>
+                </div>
+                <div class="leading-relaxed text-slate-800 font-medium">${formatted}</div>
+            `;
+        }
+
+        function backToStoreView() {
+            document.getElementById('viewReader').classList.add('hidden');
+            document.getElementById('viewAdmin').classList.add('hidden');
+            document.getElementById('viewStore').classList.remove('hidden');
+        }
+
+        // 11. Login & Panel Admin (romi1906)
+        function openAdminLoginModal() {
+            document.getElementById('adminUserField').value = '';
+            document.getElementById('adminPassField').value = '';
+            document.getElementById('adminLoginModal').classList.remove('hidden');
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        }
+
+        function verifyAdminCredentials() {
+            const u = document.getElementById('adminUserField').value.trim();
+            const p = document.getElementById('adminPassField').value.trim();
+
+            if (u === 'romi1906' && p === 'romi1906') {
+                isAdminSessionActive = true;
+                closeAdminLoginModal();
+                openAdminPanel();
+                showToast('Selamat datang di Panel Admin, Bunda Romi!');
+            } else {
+                showToast('Username atau Password tidak sesuai!', true);
+            }
+        }
+
+        function openAdminPanel() {
+            isAdminSessionActive = true;
+            const bank = getBankSettings();
+            document.getElementById('adminBankName').value = bank.bankName;
+            document.getElementById('adminBankNumber').value = bank.bankNumber;
+            document.getElementById('adminBankHolder').value = bank.bankHolder;
+            document.getElementById('adminWaNumber').value = bank.waNumber;
+            document.getElementById('adminLicenseCode').value = bank.licenseCode;
+
+            renderAdminPackageList();
+            renderAdminOrderLogs();
+            switchAdminPracticeTab(currentAdminPracticeType || 'TKA');
+
+            document.getElementById('viewStore').classList.add('hidden');
+            document.getElementById('viewReader').classList.add('hidden');
+            document.getElementById('viewAdmin').classList.remove('hidden');
+        }
+
+        function renderAdminOrderLogs() {
+            const logs = getOrderLogs();
+            const countEl = document.getElementById('adminOrderCount');
+            const listEl = document.getElementById('adminOrderLogList');
+            if (!countEl || !listEl) return;
+
+            countEl.innerText = `${logs.length} Laporan`;
+            if (logs.length === 0) {
+                listEl.innerHTML = `<p class="text-slate-400 italic py-2">Belum ada laporan transfer otomatis yang masuk.</p>`;
+                return;
+            }
+            listEl.innerHTML = logs.map(item => `
+                <div class="p-2.5 rounded-2xl border border-emerald-200 bg-emerald-50/50 space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono font-extrabold text-[11px] bg-emerald-600 text-white px-2 py-0.5 rounded-lg">${item.orderCode}</span>
+                        <span class="font-black text-sky-800 text-xs">${formatRupiah(item.totalTransfer)}</span>
+                    </div>
+                    <p class="font-extrabold text-slate-800 text-[11px] leading-snug">${item.pkgTitle}</p>
+                    <p class="text-[10px] text-slate-600">WA: <strong>${item.buyerWa}</strong> • Media: <strong class="font-mono">${item.deviceId}</strong></p>
+                    <p class="text-[10px] text-slate-400">${item.time}</p>
+                </div>
+            `).join('');
+        }
+
+        function previewBuyerView(targetGrade = null) {
+            document.getElementById('adminPreviewBar').classList.remove('hidden');
+            document.getElementById('viewAdmin').classList.add('hidden');
+            document.getElementById('viewReader').classList.add('hidden');
+            document.getElementById('viewStore').classList.remove('hidden');
+
+            if (targetGrade) {
+                selectGradeAndShowCatalog(targetGrade);
+            } else {
+                selectGradeAndShowCatalog(currentSelectedGrade || 'Semua');
+            }
+            showToast('Menampilkan Tampilan Pembeli dengan perubahan terbaru!');
+        }
+
+        function logoutAdmin() {
+            isAdminSessionActive = false;
+            document.getElementById('adminPreviewBar').classList.add('hidden');
+            renderCatalogGrid();
+            backToStoreView();
+            showToast('Anda telah keluar dari Panel Admin.');
+        }
+
+        function saveBankSettings() {
+            const updated = {
+                bankName: document.getElementById('adminBankName').value.trim() || defaultBankSettings.bankName,
+                bankNumber: document.getElementById('adminBankNumber').value.trim() || defaultBankSettings.bankNumber,
+                bankHolder: document.getElementById('adminBankHolder').value.trim() || defaultBankSettings.bankHolder,
+                waNumber: document.getElementById('adminWaNumber').value.trim() || defaultBankSettings.waNumber,
+                licenseCode: (document.getElementById('adminLicenseCode').value.trim() || defaultBankSettings.licenseCode).toUpperCase()
+            };
+            localStorage.setItem('lb_bank_settings', JSON.stringify(updated));
+            renderCatalogGrid();
+            showToast('Pengaturan rekening & kode aktivasi berhasil disimpan!');
+        }
+
+        function handleFileRead(event, targetTextareaId) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            if (file.name.toLowerCase().endsWith('.pdf')) {
+                document.getElementById(targetTextareaId).value =
+                    `[Dokumen PDF Terunggah: ${file.name} (${Math.round(file.size / 1024)} KB)]\n\nIsi dokumen telah dienkripsi dan siap ditampilkan pada Ruang Unduh Pembeli.`;
+                showToast(`File PDF "${file.name}" berhasil dimuat!`);
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(targetTextareaId).value = e.target.result;
+                showToast(`File "${file.name}" berhasil dibaca ke kolom materi!`);
+            };
+            reader.readAsText(file);
+        }
+
+        function addNewCatalogPackage() {
+            const title = document.getElementById('newPkgTitle').value.trim();
+            const grade = document.getElementById('newPkgGrade').value;
+            const price = parseInt(document.getElementById('newPkgPrice').value, 10) || 40000;
+            const badge = document.getElementById('newPkgBadge').value.trim() || 'Paket Lengkap';
+            const desc = document.getElementById('newPkgDesc').value.trim() || 'Paket kisi-kisi, soal latihan, dan pembahasan lengkap.';
+            const kisi = document.getElementById('newPkgKisi').value.trim() || 'Kisi-kisi materi sesuai kurikulum terbaru.';
+            const soal = document.getElementById('newPkgSoal').value.trim() || 'Naskah soal latihan Bahasa Indonesia.';
+            const bahasan = document.getElementById('newPkgBahasan').value.trim() || 'Pembahasan lengkap setiap butir soal.';
+
+            if (!title) {
+                showToast('Mohon isi Judul Paket Soal terlebih dahulu.', true);
+                return;
+            }
+
+            const pkgs = getPackages();
+            pkgs.unshift({
+                id: 'pkg-' + Date.now(),
+                title,
+                grade,
+                price,
+                badge,
+                desc,
+                kisi,
+                soal,
+                bahasan
+            });
+            localStorage.setItem('lb_packages', JSON.stringify(pkgs));
+
+            document.getElementById('newPkgTitle').value = '';
+            document.getElementById('newPkgDesc').value = '';
+            document.getElementById('newPkgKisi').value = '';
+            document.getElementById('newPkgSoal').value = '';
+            document.getElementById('newPkgBahasan').value = '';
+
+            currentSelectedGrade = grade;
+            renderAdminPackageList();
+            renderCatalogGrid();
+            showToast(`Paket "${title}" (${grade}) berhasil diunggah & diperbarui di Tampilan Pembeli!`);
+        }
+
+        function deleteCatalogPackage(pkgId) {
+            const pkgs = getPackages().filter(p => p.id !== pkgId);
+            localStorage.setItem('lb_packages', JSON.stringify(pkgs));
+            renderAdminPackageList();
+            renderCatalogGrid();
+            showToast('Paket berhasil dihapus dari katalog.');
+        }
+
+        function renderAdminPackageList() {
+            const pkgs = getPackages();
+            document.getElementById('adminPkgCount').innerText = `${pkgs.length} Paket`;
+            const box = document.getElementById('adminPackageList');
+            box.innerHTML = pkgs.map(p => `
+                <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <span class="text-[10px] font-extrabold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">${p.grade}</span>
+                        <p class="font-extrabold text-slate-800 mt-1">${p.title}</p>
+                        <p class="text-[11px] text-slate-500">${formatRupiah(p.price)} • 3 Ruang Unduh</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="previewBuyerView('${p.grade}')" class="px-2.5 py-1.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-800 font-extrabold text-[10px] transition" title="Lihat di Katalog Pembeli">
+                            <i class="fa-solid fa-store mr-1"></i>Lihat Katalog
+                        </button>
+                        <button onclick="openUnlockedReader('${p.id}', true)" class="px-2.5 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-extrabold text-[10px] transition" title="Pratinjau 3 Ruang Unduh">
+                            <i class="fa-solid fa-folder-open mr-1"></i>Cek 3 Ruang
+                        </button>
+                        <button onclick="deleteCatalogPackage('${p.id}')" class="text-rose-600 hover:text-rose-800 p-1.5" title="Hapus Paket">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 12. Kelola Tempat Unggah Tersendiri: Simulasi TKA, Ulangan Semester, Ulangan Harian
+        let currentAdminPracticeType = 'TKA';
+        let tempAdminQuestions = [];
+
+        function switchAdminPracticeTab(typeKey) {
+            currentAdminPracticeType = typeKey;
+            ['TKA', 'SEMESTER', 'HARIAN'].forEach(t => {
+                const btn = document.getElementById('admTab-' + t);
+                if (t === typeKey) {
+                    btn.className = 'px-4 py-1.5 rounded-full text-xs font-extrabold bg-sky-600 text-white shadow';
+                } else {
+                    btn.className = 'px-4 py-1.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200';
+                }
+            });
+
+            document.getElementById('admPracticeTypeLabel').innerText = typeKey;
+            document.getElementById('admPracticeBtnLabel').innerText = typeKey;
+
+            const sets = getPracticeSets();
+            const currentSet = sets[typeKey] || defaultPracticeSets[typeKey];
+            document.getElementById('admPracticeTitle').value = currentSet.title;
+            document.getElementById('admPracticeKisi').value = currentSet.kisi;
+            tempAdminQuestions = JSON.parse(JSON.stringify(currentSet.questions || []));
+            renderAdminPracticeQuestions();
+        }
+
+        function renderAdminPracticeQuestions() {
+            const box = document.getElementById('admPracticeQuestionsBox');
+            box.innerHTML = tempAdminQuestions.map((item, idx) => `
+                <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-extrabold text-indigo-900">Soal Nomor ${idx + 1}</span>
+                        <button type="button" onclick="removeAdminPracticeQuestion(${idx})" class="text-rose-600 text-[11px] font-bold hover:underline">Hapus</button>
+                    </div>
+                    <input type="text" value="${item.q.replace(/"/g, '&quot;')}" oninput="updateAdminQField(${idx}, 'q', this.value)" placeholder="Pertanyaan soal..." class="w-full border border-slate-300 rounded-xl px-2.5 py-1.5 bg-white">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                        ${item.options.map((opt, oIdx) => `
+                            <input type="text" value="${opt.replace(/"/g, '&quot;')}" oninput="updateAdminQOption(${idx}, ${oIdx}, this.value)" class="border border-slate-200 rounded-lg px-2 py-1 bg-white text-[11px]">
+                        `).join('')}
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 block">Kunci Jawaban:</label>
+                            <select onchange="updateAdminQField(${idx}, 'answer', parseInt(this.value, 10))" class="w-full border border-slate-300 rounded-lg px-2 py-1 bg-white font-bold">
+                                <option value="0" ${item.answer === 0 ? 'selected' : ''}>Pilihan A</option>
+                                <option value="1" ${item.answer === 1 ? 'selected' : ''}>Pilihan B</option>
+                                <option value="2" ${item.answer === 2 ? 'selected' : ''}>Pilihan C</option>
+                                <option value="3" ${item.answer === 3 ? 'selected' : ''}>Pilihan D</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="text-[10px] font-bold text-slate-500 block">Pembahasan:</label>
+                            <input type="text" value="${item.explanation.replace(/"/g, '&quot;')}" oninput="updateAdminQField(${idx}, 'explanation', this.value)" class="w-full border border-slate-300 rounded-lg px-2 py-1 bg-white">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateAdminQField(qIdx, field, val) {
+            if (tempAdminQuestions[qIdx]) {
+                tempAdminQuestions[qIdx][field] = val;
+            }
+        }
+
+        function updateAdminQOption(qIdx, optIdx, val) {
+            if (tempAdminQuestions[qIdx] && tempAdminQuestions[qIdx].options) {
+                tempAdminQuestions[qIdx].options[optIdx] = val;
+            }
+        }
+
+        function addAdminPracticeQuestionRow() {
+            tempAdminQuestions.push({
+                q: 'Tuliskan pertanyaan soal baru di sini...',
+                options: ['A. Pilihan pertama', 'B. Pilihan kedua', 'C. Pilihan ketiga', 'D. Pilihan keempat'],
+                answer: 0,
+                explanation: 'Tuliskan pembahasan soal di sini.'
+            });
+            renderAdminPracticeQuestions();
+        }
+
+        function removeAdminPracticeQuestion(idx) {
+            if (tempAdminQuestions.length <= 1) {
+                showToast('Minimal harus ada 1 butir soal latihan.', true);
+                return;
+            }
+            tempAdminQuestions.splice(idx, 1);
+            renderAdminPracticeQuestions();
+        }
+
+        function saveAdminPracticeSet() {
+            const sets = getPracticeSets();
+            sets[currentAdminPracticeType] = {
+                title: document.getElementById('admPracticeTitle').value.trim() || defaultPracticeSets[currentAdminPracticeType].title,
+                kisi: document.getElementById('admPracticeKisi').value.trim() || defaultPracticeSets[currentAdminPracticeType].kisi,
+                questions: tempAdminQuestions
+            };
+            localStorage.setItem('lb_practice_sets', JSON.stringify(sets));
+            showToast(`Soal latihan ${currentAdminPracticeType} berhasil disimpan & langsung aktif di Beranda!`);
+        }
+
+        function previewAdminPracticeSet() {
+            saveAdminPracticeSet();
+            openPracticeQuizByType(currentAdminPracticeType);
+        }
+
+        // 13. Proteksi Keamanan Dokumen (Anti-Klik Kanan, Anti-Pintasan, dan Blur Saat Kursor Keluar)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showToast('Klik kanan dinonaktifkan demi keamanan hak cipta materi.', true);
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey && ['s', 'p', 'u', 'c'].includes(e.key.toLowerCase())) || e.key === 'F12') {
+                e.preventDefault();
+                showToast('Fungsi salin, simpan, dan cetak dinonaktifkan pada dokumen ini.', true);
+            }
+        });
+
+        window.addEventListener('blur', function() {
+            const docBox = document.getElementById('protectedDocumentBox');
+            if (docBox) docBox.classList.add('blur-protection');
+        });
+
+        window.addEventListener('focus', function() {
+            const docBox = document.getElementById('protectedDocumentBox');
+            if (docBox) docBox.classList.remove('blur-protection');
+        });
+    </script>
+</body>
+</html>
